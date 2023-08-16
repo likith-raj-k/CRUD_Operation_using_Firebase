@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>label{display: inline-block;width: 80px};
+    input,select{width: 120px;} </style>
+</head>
+
+<body>
+    <label for="Name">Name: </label>
+        <input type="text" id="name"><br><br>
+ 
+        <label for="RollNo">Roll No: </label>
+        <input type="text" id="roll"><br><br>
+
+        <label for="section">Section: </label>
+        <input type="text" id="section"><br><br>
+
+        <label for="Name">Gender: </label>
+        <select  id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <hr>
+        <button id="Insbtn">INSERT</button>
+        <button id="Selbtn">SELECT</button>
+        <button id="Updbtn">UPDATE</button>
+        <button id="Delbtn">DELETE</button>
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+          
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+              apiKey: "AIzaSyD5svs9fxHTMEmhEXqBZSxCpC-67VXQcTA",
+              authDomain: "simplecrudoperation.firebaseapp.com",
+              projectId: "simplecrudoperation",
+              storageBucket: "simplecrudoperation.appspot.com",
+              messagingSenderId: "703545233695",
+              appId: "1:703545233695:web:b1cd4f0798d695866b202a"
+            };
+          
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            
+//------------------------------------------------------------------------
+
+            import {getDatabase,ref,get,set,child,update,remove} 
+            from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js"
+
+            const db =  getDatabase();
+//----------------------------References-------------------------//
+
+            var name = document.getElementById("name");
+            var rollNo = document.getElementById("roll");
+            var section = document.getElementById("section");
+            var genbox = document.getElementById("gender");
+
+            var inBtn = document.getElementById("Insbtn");
+            var selBtn = document.getElementById("Selbtn");
+            var upBtn = document.getElementById("Updbtn");
+            var delBtn = document.getElementById("Delbtn");
+
+//-------------------------insert---------------------------------
+            function insertData() {
+                set(ref(db,"TheStudentsValue/"+rollNo.value),{
+                    NameOfStd:name.value,
+                    RollNo:rollNo.value,
+                    Gender:genbox.value,
+                    Section:section.value
+                })
+                .then(()=>{
+                    alert("Data stored successfully...")
+                })
+                .catch((error)=>{
+                    alert("Unsuccessfull, error"+error);
+                });
+            }
+
+//---------------------------------select----------------------------
+            function selectData() {
+                const dbref = ref(db);
+
+                get(child(dbref,"TheStudentsValue/"+rollNo.value)).then((snapshot)=>{
+                    if(snapshot.exists()){
+                        name.value = snapshot.val().NameOfStd;
+                        section.value = snapshot.val().Section;
+                        genbox.value = snapshot.val().Gender;
+                    }
+                    else {
+                        alert("No data found");
+                    }
+                })
+                .catch((error)=>{
+                    alert("Unsuccessfull, error"+error);
+                });
+            }
+
+//--------------------------------update-------------------------
+            function updateData() {
+                update(ref(db,"TheStudentsValue/"+rollNo.value), {
+                    NameOfStd:name.value,
+                    Gender:genbox.value,
+                    Section:section.value
+                })
+                .then(()=>{
+                    alert("Data updated successfully...")
+                })
+                .catch((error)=>{
+                    alert("Unsuccessfull, error"+error);
+                });
+            }
+
+        
+//-----------------------delete----------------------
+            function deleteData() {
+                remove(ref(db,"TheStudentsValue/"+rollNo.value))
+                .then(()=>{
+                    alert("Data Removed successfully...")
+                })
+                .catch((error)=>{
+                    alert("Unsuccessfull, error"+error);
+                });
+            }
+
+
+            inBtn.addEventListener('click', insertData);
+            selBtn.addEventListener('click', selectData);
+            upBtn.addEventListener('click', updateData);
+            delBtn.addEventListener('click', deleteData);
+
+          </script>
+</body>
+</html>
